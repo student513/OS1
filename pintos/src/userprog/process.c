@@ -31,6 +31,20 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
+  
+  /*형준 10.31*/
+  char* token=NULL;
+  char temp_file_name[strlen(file_name)+1];
+  
+  for(int i=0;i<strlen(file_name);i++){
+    temp_file_name[i]=file_name[i];
+  }
+  temp_file_name[strlen(file_name)]='\0';
+  
+  strtok_r(temp_file_name," ",&token);
+  //printf("check::(userprog/process.c/process_execute) : %s\n",file_name);
+  if (filesys_open(temp_file_name) == NULL) return -1;
+  /* */
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -40,7 +54,7 @@ process_execute (const char *file_name)
   strlcpy (fn_copy, file_name, PGSIZE);
 
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (temp_file_name, PRI_DEFAULT, start_process, fn_copy);//10.31 형준 file_name->temp_
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
   return tid;
