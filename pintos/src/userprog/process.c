@@ -78,17 +78,11 @@ start_process (void *file_name_)
   char temp_file_name[256];
 
   printf("스타트 프로세스 start_process : %s\n",file_name);
-  strlcpy(temp_file_name,file_name,PGSIZE);
-  temp_file_name[strlen(temp_file_name)]='\0';
+  //strlcpy(temp_file_name,file_name,PGSIZE);
+  //temp_file_name[strlen(temp_file_name)]='\0';
   //printf("\n라라라라라라%s\n%s",temp_file_name, file_name);
-  
-  strtok_r(temp_file_name," ",&token);
-  printf("\n템프템프 %s\n",temp_file_name);
-  while(*token!=NULL){
-    temp_token = token;
-    strtok_r(NULL," ",&token);
-    printf("토큰토큰 %s",temp_token);
-  }
+  //parse_file_name
+  parse_filename(file_name,temp_file_name);
 
   /**/
 
@@ -99,6 +93,12 @@ start_process (void *file_name_)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (temp_file_name, &if_.eip, &if_.esp);
 
+  /*20191101 inseok: stackArguments*/
+  if(success){
+    stack_arguments(file_name, &if_.esp);
+
+  }
+  /**/
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) 
@@ -128,9 +128,10 @@ int
 process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
 {
   int i;
-  for(i=0;i<100000;i++){
+
+  for(i=0;i<100000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
     printf(" ");
-  }
+  };
   return -1;
 }
 
@@ -319,6 +320,10 @@ load (const char *file_name, void (**eip) (void), void **esp)
               uint32_t mem_page = phdr.p_vaddr & ~PGMASK;
               uint32_t page_offset = phdr.p_vaddr & PGMASK;
               uint32_t read_bytes, zero_bytes;
+
+              /*20191101 inseok*/
+              //printf("\n\n--------passed--------\n");//check
+              /**/
               if (phdr.p_filesz > 0)
                 {
                   /* Normal segment.
@@ -338,8 +343,12 @@ load (const char *file_name, void (**eip) (void), void **esp)
                                  read_bytes, zero_bytes, writable))
                 goto done;
             }
-          else
+          else{
+            /*20191101 inseok pagefault?*/
+            //printf("\n validate segment == f \n");//check
+            /**/
             goto done;
+          }
           break;
         }
     }
@@ -508,3 +517,85 @@ install_page (void *upage, void *kpage, bool writable)
   return (pagedir_get_page (th->pagedir, upage) == NULL
           && pagedir_set_page (th->pagedir, upage, kpage, writable));
 }
+
+/*20191101 inseok : parse_filename*/
+void parse_filename(char* src, char *dest) {
+  char* token; 
+  char* temp_token;
+  printf("성공");//check
+  strlcpy(dest,src,PGSIZE);
+  dest[strlen(dest)]='\0';
+  strtok_r(dest," ",&token);
+
+  printf("\n템프템프 %s\n",dest);//check
+  while(*token!=NULL){
+    temp_token = token;
+    strtok_r(NULL," ",&token);
+    printf("토큰토큰 %s",temp_token);//check
+  }
+}
+/**/
+
+/*20191101 inseok : parse_filename*/
+void stack_arguments(const char* file_name, void** esp){
+  //var
+  char **argv;
+  int argc=0;
+  char temp_file_name[strlen(file_name)+1];//copy
+  
+  char* token;
+  int i;
+
+  strlcpy(temp_file_name,file_name,PGSIZE);
+
+  // calculate argc
+  strtok_r(temp_file_name," ",&token);
+  argc++;
+  while(*token != NULL){
+      strtok_r(NULL," ",&token);
+      argc++;
+  }
+  printf("-------argc : %d\n",argc);//check
+
+  //store argv
+  strlcpy(temp_file_name,file_name,PGSIZE);
+  temp_file_name[strlen(temp_file_name)]='\0';
+  printf("tfn:%s\n",temp_file_name);
+  argv=(char**)malloc(sizeof(char*)*argc);
+  argv[0]=strtok_r(temp_file_name," ",&token);
+  printf("------argv[0] : %s\n",argv[0]);
+  for(i=1;i<argc;i++){
+    argv[i] = strtok_r(NULL," ",&token);
+    printf("-----argv[%d] : %s\n",i,argv[i]);//check
+  }
+
+
+              /*  //realloc?
+              argv = (char**)malloc(sizeof(char*)*(argc+1));
+              argv[argc]=strtok_r(temp_file_name," ",&token);
+              printf(">>>>>>>>>>>>%s\n",argv[argc]);//check
+              argc++;
+              while(*token != NULL){
+                  argv = realloc(argv,sizeof(char*)*(argc+1));
+                  argv[argc]= strtok_r(NULL," ",&token);
+                  argc++;
+                  printf(">>>>>!>>>>>>%s\n",argv[argc]);//check
+              }
+              */
+ 
+  //push argv[argc-1] ~ argv[0]
+
+  //push word align
+
+  //push NULL
+
+  //push address of argv[argc-1] ~ argv[0]
+
+  //push address of argv
+
+  //push argc
+
+  //push return address
+
+}
+/**/
