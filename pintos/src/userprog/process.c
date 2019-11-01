@@ -128,7 +128,7 @@ int
 process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
 {
   int i;
-  for(i=0;i<40000;i++){
+  for(i=0;i<100000;i++){
     printf(" ");
   }
   return -1;
@@ -401,8 +401,10 @@ validate_segment (const struct Elf32_Phdr *phdr, struct file *file)
      it then user code that passed a null pointer to system calls
      could quite likely panic the kernel by way of null pointer
      assertions in memcpy(), etc. */
-  if (phdr->p_vaddr < PGSIZE)
+  if (phdr->p_vaddr < PGSIZE){
+    //printf("오프셋----------------");
     return false;
+  }
 
   /* It's okay. */
   return true;
