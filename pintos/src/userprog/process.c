@@ -70,7 +70,7 @@ start_process (void *file_name_)
   struct intr_frame if_;
   bool success;
 
-  /* 10.31 형준*/
+  /* 10.31 형준*///인석
   printf("스타트 프로세스 start_process : %s\n",file_name);
   /**/
 
