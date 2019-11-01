@@ -35,8 +35,9 @@ process_execute (const char *file_name)
   /*형준 10.31*/
   char* token=NULL;
   char temp_file_name[strlen(file_name)+1];
-  
-  for(int i=0;i<strlen(file_name);i++){
+  int i;
+
+  for(i=0;i<strlen(file_name);i++){
     temp_file_name[i]=file_name[i];
   }
   temp_file_name[strlen(file_name)]='\0';
@@ -48,13 +49,13 @@ process_execute (const char *file_name)
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
-  fn_copy = palloc_get_page (0);
+  fn_copy = palloc_get_page (0);//page를 할당해줌 10.31 형준
   if (fn_copy == NULL)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
 
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (temp_file_name, PRI_DEFAULT, start_process, fn_copy);//10.31 형준 file_name->temp_
+  tid = thread_create (temp_file_name, PRI_DEFAULT, start_process, fn_copy);//file_name->temp_ 10.31 형준
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
   return tid;
@@ -68,6 +69,10 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
+
+  /* 10.31 형준*/
+  printf("스타트 프로세스 start_process : %s\n",file_name);
+  /**/
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -100,9 +105,14 @@ start_process (void *file_name_)
 
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
+
 int
 process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
 {
+  int i;
+  for(i=0;i<100000;i++){
+    printf("i");
+  }
   return -1;
 }
 

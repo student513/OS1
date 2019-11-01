@@ -85,7 +85,7 @@ static tid_t allocate_tid (void);
    It is not safe to call thread_current() until this function
    finishes. */
 void
-thread_init (void) 
+thread_init (void) //스레드를 러닝상태로 만든다 10.31 형준
 {
   ASSERT (intr_get_level () == INTR_OFF);
 
@@ -99,6 +99,7 @@ thread_init (void)
   init_thread (initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid ();
+
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -166,6 +167,7 @@ thread_print_stats (void)
 tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux) 
+//temp_file_name, PRI_DEFAULT, start_process, fn_copy
 {
   struct thread *t;
   struct kernel_thread_frame *kf;
@@ -182,7 +184,7 @@ thread_create (const char *name, int priority,
     return TID_ERROR;
 
   /* Initialize thread. */
-  init_thread (t, name, priority);
+  init_thread (t, name, priority);//temp_file_name,PRI_DEFAULT
   tid = t->tid = allocate_tid ();
 
   /* Prepare thread for first run by initializing its stack.
@@ -464,13 +466,18 @@ init_thread (struct thread *t, const char *name, int priority)
   ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
   ASSERT (name != NULL);
 
-  memset (t, 0, sizeof *t);
-  t->status = THREAD_BLOCKED;
+  memset (t, 0, sizeof *t);//스레드를 0으로 초기화
+  t->status = THREAD_BLOCKED;//스레드의 상태는 blocked
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->magic = THREAD_MAGIC;
-  list_push_back (&all_list, &t->allelem);
+  list_push_back (&all_list, &t->allelem);//만들어진 스레드를 all_list에 매달음
+
+  /* 10.31 형준 */
+  //list_init(&t->child_list);
+  //t->exit_status=-1;
+  /* */
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
