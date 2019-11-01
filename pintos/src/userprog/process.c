@@ -74,7 +74,7 @@ start_process (void *file_name_)
   /* 10.31 형준,인석*/
   
   int i;
-  char *token, *temp_token;
+  char *token;
   char temp_file_name[256];
 
   printf("스타트 프로세스 start_process : %s\n",file_name);
@@ -546,6 +546,9 @@ void stack_arguments(const char* file_name, void** esp){
   char* token;
   int i;
 
+  int argument_size =0;//byte
+  int total_arguments_size = 0;//byte
+
   strlcpy(temp_file_name,file_name,PGSIZE);
 
   // calculate argc
@@ -583,19 +586,45 @@ void stack_arguments(const char* file_name, void** esp){
               }
               */
  
-  //push argv[argc-1] ~ argv[0]
-
-  //push word align
-
+  //push argv[argc-1] ~ argv[0] , repoint address of argv to designated *esp
+  for(i=argc-1;0<=i;i--){ 
+    argument_size = strlen(argv[i])+1; //ex) echo\0 == 5 //printf("\\%d \n",argument_size);//check 
+    
+    *esp -= argument_size;//참고: char == 1 byte
+    memcpy(*esp,argv[i],argument_size);
+    
+    argv[i] = *esp; //for late use in "push address of argv[argc-1] ~ argv[0]" 
+    
+    total_arguments_size += argument_size;
+    
+  }
+  //push word align(if needed)
+  *esp -= (4-(total_arguments_size % 4))%4;//esp -= 0 ~ 3
+  memset(*esp,0, ((4-(total_arguments_size%4))%4 )* sizeof(uint8_t)); // uint8_t?
   //push NULL
-
+  *esp -= 4;
+  memset(*esp,0, 1 * sizeof(char*));//또는 4*sizeof(uint8_t) 또는 1*sizeof(uint32_t)
   //push address of argv[argc-1] ~ argv[0]
+  for(i=argc-1;0<=i;i--){
+    *esp -= sizeof(char*);//manual 3.5.1 그림 참고하기
+    memcpy(*esp,&argv[i],sizeof(char*));
+  }
+  //push address of argv//4
+  *esp -= sizeof(char**);
+  **(uint32_t **)esp = *esp + sizeof(char**);//manual 3.5.1 그림 참고하기
+                              /*
+                              *esp -= sizeof(char**);//manual 3.5.1 그림 참고하기
+                              memcpy(*esp,&(argv[0]),sizeof(char**));*/
 
-  //push address of argv
-
-  //push argc
-
-  //push return address
-
+  //push argc//4
+  *esp -= sizeof(int);
+  **(uint32_t **)esp = argc;
+ 
+  //push return address//4
+  *esp -= sizeof(void*);
+  memset(*esp, 0, sizeof(void*)); //why zero? offset?
+ 
+  hex_dump(*esp, *esp, 100, 1);//check
+  
 }
 /**/
