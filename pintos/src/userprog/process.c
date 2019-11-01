@@ -89,13 +89,7 @@ start_process (void *file_name_)
     strtok_r(NULL," ",&token);
     printf("토큰토큰 %s",temp_token);
   }
-  /*
-  printf("\n\n");
-  for(i=0;i<256;i++){
-    printf("%c",temp_file_name[i]);
-  }
-  printf("\n\n");
-  */
+
   /**/
 
   /* Initialize interrupt frame and load executable. */
@@ -134,7 +128,7 @@ int
 process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
 {
   int i;
-  for(i=0;i<100000;i++){
+  for(i=0;i<40000;i++){
     printf(" ");
   }
   return -1;
