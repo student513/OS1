@@ -9,5 +9,6 @@ void process_exit (void);
 void process_activate (void);
 /*20191101 inseok*/
 void parse_filename(char* src, char *dest);
+void stack_arguments(const char* file_name, void** esp);
 /**/
 #endif /* userprog/process.h */

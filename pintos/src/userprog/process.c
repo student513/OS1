@@ -93,6 +93,12 @@ start_process (void *file_name_)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (temp_file_name, &if_.eip, &if_.esp);
 
+  /*20191101 inseok: stackArguments*/
+  if(success){
+    stack_arguments(file_name, &if_.esp);
+
+  }
+  /**/
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) 
@@ -122,7 +128,7 @@ int
 process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
 {
   int i;
-  for(i=0;i<100000;i++){
+  for(i=0;i<200000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
     printf(" ");
   };
   return -1;
@@ -315,7 +321,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
               uint32_t read_bytes, zero_bytes;
 
               /*20191101 inseok*/
-              printf("\n\n--------passed--------\n");//check
+              //printf("\n\n--------passed--------\n");//check
               /**/
               if (phdr.p_filesz > 0)
                 {
@@ -338,7 +344,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
             }
           else{
             /*20191101 inseok pagefault?*/
-            printf("\n validate segment == f \n");//check
+            //printf("\n validate segment == f \n");//check
             /**/
             goto done;
           }
@@ -518,11 +524,75 @@ void parse_filename(char* src, char *dest) {
   dest[strlen(dest)]='\0';
   strtok_r(dest," ",&token);
 
-  printf("\n템프템프 %s\n",dest);
+  printf("\n템프템프 %s\n",dest);//check
   while(*token!=NULL){
     temp_token = token;
     strtok_r(NULL," ",&token);
-    printf("토큰토큰 %s",temp_token);
+    printf("토큰토큰 %s",temp_token);//check
   }
+}
+/**/
+
+/*20191101 inseok : parse_filename*/
+void stack_arguments(const char* file_name, void** esp){
+  //var
+  char **argv;
+  int argc=0;
+  char temp_file_name[strlen(file_name)+1];//copy
+  
+  char* token;
+  int i;
+
+  strlcpy(temp_file_name,file_name,PGSIZE);
+
+  // calculate argc
+  strtok_r(temp_file_name," ",&token);
+  argc++;
+  while(*token != NULL){
+      strtok_r(NULL," ",&token);
+      argc++;
+  }
+  printf("-------argc : %d\n",argc);//check
+
+  //store argv
+  strlcpy(temp_file_name,file_name,PGSIZE);
+  temp_file_name[strlen(temp_file_name)]='\0';
+  printf("tfn:%s\n",temp_file_name);
+  argv=(char**)malloc(sizeof(char*)*argc);
+  argv[0]=strtok_r(temp_file_name," ",&token);
+  printf("------argv[0] : %s\n",argv[0]);
+  for(i=1;i<argc;i++){
+    argv[i] = strtok_r(NULL," ",&token);
+    printf("-----argv[%d] : %s\n",i,argv[i]);//check
+  }
+
+
+              /*  //realloc?
+              argv = (char**)malloc(sizeof(char*)*(argc+1));
+              argv[argc]=strtok_r(temp_file_name," ",&token);
+              printf(">>>>>>>>>>>>%s\n",argv[argc]);//check
+              argc++;
+              while(*token != NULL){
+                  argv = realloc(argv,sizeof(char*)*(argc+1));
+                  argv[argc]= strtok_r(NULL," ",&token);
+                  argc++;
+                  printf(">>>>>!>>>>>>%s\n",argv[argc]);//check
+              }
+              */
+ 
+  //push argv[argc-1] ~ argv[0]
+
+  //push word align
+
+  //push NULL
+
+  //push address of argv[argc-1] ~ argv[0]
+
+  //push address of argv
+
+  //push argc
+
+  //push return address
+
 }
 /**/
