@@ -78,17 +78,11 @@ start_process (void *file_name_)
   char temp_file_name[256];
 
   printf("스타트 프로세스 start_process : %s\n",file_name);
-  strlcpy(temp_file_name,file_name,PGSIZE);
-  temp_file_name[strlen(temp_file_name)]='\0';
+  //strlcpy(temp_file_name,file_name,PGSIZE);
+  //temp_file_name[strlen(temp_file_name)]='\0';
   //printf("\n라라라라라라%s\n%s",temp_file_name, file_name);
-  
-  strtok_r(temp_file_name," ",&token);
-  printf("\n템프템프 %s\n",temp_file_name);
-  while(*token!=NULL){
-    temp_token = token;
-    strtok_r(NULL," ",&token);
-    printf("토큰토큰 %s",temp_token);
-  }
+  //parse_file_name
+  parse_filename(file_name,temp_file_name);
 
   /**/
 
@@ -128,9 +122,9 @@ int
 process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
 {
   int i;
-  for(i=0;i<40000;i++){
+  for(i=0;i<100000;i++){
     printf(" ");
-  }
+  };
   return -1;
 }
 
@@ -319,6 +313,10 @@ load (const char *file_name, void (**eip) (void), void **esp)
               uint32_t mem_page = phdr.p_vaddr & ~PGMASK;
               uint32_t page_offset = phdr.p_vaddr & PGMASK;
               uint32_t read_bytes, zero_bytes;
+
+              /*20191101 inseok*/
+              printf("\n\n--------passed--------\n");//check
+              /**/
               if (phdr.p_filesz > 0)
                 {
                   /* Normal segment.
@@ -338,8 +336,12 @@ load (const char *file_name, void (**eip) (void), void **esp)
                                  read_bytes, zero_bytes, writable))
                 goto done;
             }
-          else
+          else{
+            /*20191101 inseok pagefault?*/
+            printf("\n validate segment == f \n");//check
+            /**/
             goto done;
+          }
           break;
         }
     }
@@ -506,3 +508,21 @@ install_page (void *upage, void *kpage, bool writable)
   return (pagedir_get_page (th->pagedir, upage) == NULL
           && pagedir_set_page (th->pagedir, upage, kpage, writable));
 }
+
+/*20191101 inseok : parse_filename*/
+void parse_filename(char* src, char *dest) {
+  char* token; 
+  char* temp_token;
+  printf("성공");//check
+  strlcpy(dest,src,PGSIZE);
+  dest[strlen(dest)]='\0';
+  strtok_r(dest," ",&token);
+
+  printf("\n템프템프 %s\n",dest);
+  while(*token!=NULL){
+    temp_token = token;
+    strtok_r(NULL," ",&token);
+    printf("토큰토큰 %s",temp_token);
+  }
+}
+/**/
