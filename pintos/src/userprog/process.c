@@ -90,12 +90,6 @@ start_process (void *file_name_)
     printf("토큰토큰 %s",temp_token);
   }
   
-  printf("\n\n");
-  for(i=0;i<256;i++){
-    printf("%c",temp_file_name[i]);
-  }
-  printf("\n\n");
-  
   /**/
 
   /* Initialize interrupt frame and load executable. */
@@ -103,7 +97,7 @@ start_process (void *file_name_)
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
-  success = load (file_name, &if_.eip, &if_.esp);
+  success = load (temp_file_name, &if_.eip, &if_.esp);
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
@@ -135,7 +129,7 @@ process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형�
 {
   int i;
   for(i=0;i<100000;i++){
-    printf("i");
+    printf(" ");
   }
   return -1;
 }
