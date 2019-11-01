@@ -70,8 +70,30 @@ start_process (void *file_name_)
   struct intr_frame if_;
   bool success;
 
-  /* 10.31 형준*/
+  /* 10.31 형준,인석*/
+  
+  int i;
+  char *token, *temp_token;
+  char temp_file_name[256];
   printf("스타트 프로세스 start_process : %s\n",file_name);
+  strlcpy(temp_file_name,file_name,PGSIZE);
+  temp_file_name[strlen(temp_file_name)]='\0';
+  //printf("\n라라라라라라%s\n%s",temp_file_name, file_name);
+  
+  strtok_r(temp_file_name," ",&token);
+  printf("\n템프템프 %s\n",temp_file_name);
+  while(*token!=NULL){
+    temp_token = token;
+    strtok_r(NULL," ",&token);
+    printf("토큰토큰 %s",temp_token);
+  }
+  
+  printf("\n\n");
+  for(i=0;i<256;i++){
+    printf("%c",temp_file_name[i]);
+  }
+  printf("\n\n");
+  
   /**/
 
   /* Initialize interrupt frame and load executable. */
