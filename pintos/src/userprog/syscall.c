@@ -32,10 +32,10 @@ syscall_handler (struct intr_frame *f)
       break;
     case SYS_EXEC://
       //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
-      sys_exec((const char)*(uint32_t *)(f->esp + 4));
+      f->eax = sys_exec((const char)*(uint32_t *)(f->esp + 4));
       break;
     case SYS_WAIT://
-      sys_wait((pid_t)*(uint32_t *)(f->esp + 4));
+      f->eax = sys_wait((pid_t)*(uint32_t *)(f->esp + 4));
       break;
     case SYS_CREATE://prj2
       break;
@@ -49,12 +49,12 @@ syscall_handler (struct intr_frame *f)
       //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
       //(is_user_vaddr(f->esp + 8)) ? NULL:exit(-1);
       //(is_user_vaddr(f->esp + 12)) ? NULL:exit(-1);
-      sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
+      f->eax = sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
       
       break;
     case SYS_WRITE://
       
-      sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
+      f->eax = sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
       break;
     case SYS_SEEK://prj2
       break;

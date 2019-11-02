@@ -483,12 +483,11 @@ init_thread (struct thread *t, const char *name, int priority)
   sema_init도 되어야한다. running_thread p는 무엇?
   */
   #ifdef USERPROG
-    struct thread *p = running_thread();
-    list_init(&(t->child_list));
-    sema_init(&(t->child_lock),0);
-    list_push_back(&(p->child),&(t->child_elem));
-    //t->exit_status=-1;
-  #endif
+  sema_init(&(t->child_lock), 0);  
+  sema_init(&(t->mem_lock), 0);      
+  list_init(&(t->child));
+  list_push_back(&(running_thread()->child), &(t->child_elem));
+  #endif  
   /* */
 }
 

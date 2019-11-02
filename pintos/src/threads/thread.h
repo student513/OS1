@@ -4,7 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
-
+#include "synch.h"
 /* States in a thread's life cycle. */
 enum thread_status
   {
@@ -99,12 +99,11 @@ struct thread
     /*20191102 inseok*/
     int exit_status;
     /**/
-    //1102 형준
-    struct list child_list;
-    struct list_elem child_node;
-
+    /*1102 수정해야할 곳*/
     struct semaphore child_lock;
-
+    struct list child;
+    struct list_elem child_elem;
+    struct semaphore mem_lock;
     //
 #endif
     
