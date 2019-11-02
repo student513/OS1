@@ -17,28 +17,47 @@ syscall_init (void)
 }
 
 static void
-syscall_handler (struct intr_frame *f) 
+syscall_handler (struct intr_frame *f UNUSED) 
 {
   //1101 형준
   void * temp_esp = f->esp;
   //printf("syscall num : %d\n", *(uint32_t *)(temp_esp));//check
   //printf("f->esp : %x\n",f->esp);//check
   //hex_dump(f->esp, f->esp, 100, 1);//check
+  /*if(!is_user_vaddr(f->esp)){//abnormal
+        exit(-1);
+  }*/
 
   switch(*(uint32_t *)(temp_esp)){
     case SYS_HALT://
       halt();
       break;
     case SYS_EXIT://
-      (is_user_vaddr(f->esp + 4)) ? NULL:exit(-1); 
-      exit((int)*(uint32_t *)(f->esp + 4));
+      if(!is_user_vaddr(f->esp + 4)){//abnormal
+        exit(-1);
+      }
+      else{//normal
+        exit((int)*(uint32_t *)(f->esp + 4));
+      }
+     
       break;
     case SYS_EXEC://
-      (is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
-      f->eax = exec((const char)*(uint32_t *)(f->esp + 4));
+      if(!is_user_vaddr(f->esp +4)){
+        exit(-1);
+      }
+      else{
+        f->eax = exec((const char*)*(uint32_t *)(f->esp + 4)); //f->eax = exec((const char)*(uint32_t *)(f->esp + 4));
+      }
       break;
     case SYS_WAIT://
-      f->eax = wait((pid_t)*(uint32_t *)(f->esp + 4));
+      if(!is_user_vaddr(f->esp + 4)){
+        exit(-1);
+      }
+      else{
+        f->eax = wait((pid_t)*(uint32_t *)(f->esp + 4));
+      }
+     
+      
       break;
     case SYS_CREATE://prj2
       break;
@@ -49,11 +68,12 @@ syscall_handler (struct intr_frame *f)
     case SYS_FILESIZE://prj2
       break;
     case SYS_READ://
-      (is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
-      (is_user_vaddr(f->esp + 8)) ? NULL:exit(-1);
-      (is_user_vaddr(f->esp + 12)) ? NULL:exit(-1);
-      f->eax = write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
-      
+      if(!is_user_vaddr(f->esp + 4)){exit(-1);}
+      else if(!is_user_vaddr(f->esp + 8)){exit(-1);}
+      else if(!is_user_vaddr(f->esp + 12)){exit(-1);}
+      else{
+        f->eax = read((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
+      }
       break;
     case SYS_WRITE://
       
