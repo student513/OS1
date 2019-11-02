@@ -47,12 +47,12 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_CLOSE:
       break;
-      /*
-    case SYS_PIBONACCI:
+      /*191102 inseok*/
+    case SYS_FIBONACCI:
       break;
-    case SYS_SUM:
+    case SYS_SUM4:
       break;
-      */
+      /**/
      default:
       printf("\nsyscall error\n");
   }
@@ -65,9 +65,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 void sys_halt(void){
   shutdown_power_off();
 }
-void sys_halt(void){
 
-}
 void sys_exit(int status){
 
 }
@@ -83,3 +81,14 @@ int sys_wait(pid_t pid){
 pid_t sys_exec(const char *cmd_line){
 
 }
+
+/*20191102 inseok : functions included*/
+int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
+
+
+}
+int sys_sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
+
+
+}
+/**/
