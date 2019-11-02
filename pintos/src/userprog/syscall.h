@@ -3,7 +3,7 @@
 #include "lib/user/syscall.h"
 void syscall_init (void);
 
-//1101형준 
+/*1101형준 */
 void halt(void);
 void exit(int status);
 pid_t exec (const char *cmd_line);
@@ -24,6 +24,11 @@ int sys_write(int fd, const void *buffer, unsigned size);
 int sys_read(int fd, void* buffer, unsigned size);
 int sys_wait(pid_t pid);
 pid_t sys_exec(const char *cmd_line);
-//
+/**/
+
+/*191102 inseok : functions included*/
+int sys_fibonacci(int n);//Return N th value of Fibonacci sequence
+int sys_sum4(int a, int b, int c, int d);//Return the sum of a, b, c and d
+/**/
 
 #endif /* userprog/syscall.h */
