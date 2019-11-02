@@ -47,12 +47,12 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_CLOSE:
       break;
-      /*
-    case SYS_PIBONACCI:
+    
+    case SYS_FIBONACCI:
       break;
-    case SYS_SUM:
+    case SYS_SUM4:
       break;
-      */
+    
      default:
       printf("\nsyscall error\n");
   }
@@ -65,9 +65,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 void sys_halt(void){
   shutdown_power_off();
 }
-void sys_halt(void){
 
-}
 void sys_exit(int status){
 
 }
