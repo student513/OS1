@@ -99,6 +99,13 @@ struct thread
     /*20191102 inseok*/
     int exit_status;
     /**/
+    //1102 형준
+    struct list child_list;
+    struct list_elem child_node;
+
+    struct semaphore child_lock;
+
+    //
 #endif
     
     /* Owned by thread.c. */

@@ -14,39 +14,53 @@ syscall_init (void)
 }
 
 static void
-syscall_handler (struct intr_frame *f UNUSED) 
+syscall_handler (struct intr_frame *f) 
 {
   //1101 형준
-  //printf("syscall num : %d\n", *(uint32_t *)(f->esp));
-  switch(*(uint32_t *)(f->esp)){
+  void * temp_esp = f->esp;
+  //printf("syscall num : %d\n", *(uint32_t *)(temp_esp));//check
+  //printf("f->esp : %x\n",f->esp);//check
+  //hex_dump(f->esp, f->esp, 100, 1);//check
+
+  switch(*(uint32_t *)(temp_esp)){
     case SYS_HALT://
       sys_halt();
       break;
     case SYS_EXIT://
-
-     // sys_exit();
+      //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1); 
+      sys_exit((int)*(uint32_t *)(f->esp + 4));
       break;
     case SYS_EXEC://
+      //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
+      sys_exec((const char)*(uint32_t *)(f->esp + 4));
       break;
     case SYS_WAIT://
+      sys_wait((pid_t)*(uint32_t *)(f->esp + 4));
       break;
-    case SYS_CREATE:
+    case SYS_CREATE://prj2
       break;
-    case SYS_REMOVE:
+    case SYS_REMOVE://prj2
       break;
-    case SYS_OPEN:
+    case SYS_OPEN://prj2
       break;
-    case SYS_FILESIZE:
+    case SYS_FILESIZE://prj2
       break;
     case SYS_READ://
+      //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
+      //(is_user_vaddr(f->esp + 8)) ? NULL:exit(-1);
+      //(is_user_vaddr(f->esp + 12)) ? NULL:exit(-1);
+      sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
+      
       break;
     case SYS_WRITE://
+      
+      sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
       break;
-    case SYS_SEEK:
+    case SYS_SEEK://prj2
       break;
-    case SYS_TELL:
+    case SYS_TELL://prj2
       break;
-    case SYS_CLOSE:
+    case SYS_CLOSE://prj2
       break;
       /*191102 inseok*/
     case SYS_FIBONACCI:
@@ -59,8 +73,8 @@ syscall_handler (struct intr_frame *f UNUSED)
   }
   //
 
-  printf ("system call!\n");
-  thread_exit ();
+  //printf ("system call!\n");
+  //thread_exit ();
 }
 
 void sys_halt(void){
@@ -74,16 +88,26 @@ void sys_exit(int status){
   thread_exit();
 }
 int sys_write(int fd, const void *buffer, unsigned size){
-
+  if(fd == 1){
+    putbuf(buffer,size);
+  }
+  return (int)size;
 }
 int sys_read(int fd, void* buffer, unsigned size){
-
+  int i=0;
+  uint8_t check;
+  if(fd ==0){
+    for(i=0;i<(int)size;i++){
+      check = input_getc();
+      if(!check) break;
+    }
+  }
 }
 int sys_wait(pid_t pid){
-
+  return process_wait(pid);
 }
 pid_t sys_exec(const char *cmd_line){
-  
+  return process_execute(cmd_line); 
 }
 
 /*20191102 inseok : functions included*/
