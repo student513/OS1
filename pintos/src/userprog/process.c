@@ -125,13 +125,14 @@ start_process (void *file_name_)
    does nothing. */
 
 int
-process_wait (tid_t child_tid UNUSED) //wait할 수 있도록 수정 10.29 형준
+process_wait (tid_t child_tid) //wait할 수 있도록 수정 10.29 형준
 {
-  int i;
-
+  long long i;
+  long long sum=0;
   for(i=0;i<300000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
+    //sum+=i;
     printf(" ");
-  };
+  }
   return -1;
 }
 

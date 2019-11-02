@@ -23,7 +23,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       sys_halt();
       break;
     case SYS_EXIT://
-
+    
       break;
     case SYS_EXEC://
       break;
@@ -67,7 +67,10 @@ void sys_halt(void){
 }
 
 void sys_exit(int status){
-
+  struct thread *current_t = thread_current();
+  current_t -> exit_status = status;//success.  (nonzero == fail to exit)
+  printf("%s: exit(%d)\n", thread_name(), status);
+  thread_exit();
 }
 int sys_write(int fd, const void *buffer, unsigned size){
 
