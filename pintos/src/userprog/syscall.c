@@ -23,7 +23,8 @@ syscall_handler (struct intr_frame *f UNUSED)
       sys_halt();
       break;
     case SYS_EXIT://
-    
+
+     // sys_exit();
       break;
     case SYS_EXEC://
       break;
@@ -82,7 +83,7 @@ int sys_wait(pid_t pid){
 
 }
 pid_t sys_exec(const char *cmd_line){
-
+  
 }
 
 /*20191102 inseok : functions included*/
