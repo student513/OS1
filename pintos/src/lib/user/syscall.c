@@ -61,6 +61,32 @@
           retval;                                               \
         })
 
+//1102 형준
+#define syscall4(NUMBER, ARG0, ARG1, ARG2, ARG3)                      \
+        ({                                                      \
+          int retval;                                           \
+          asm volatile                                          \
+            ("pushl %[arg3]; pushl %[arg2]; pushl %[arg1]; pushl %[arg0]; "    \
+             "pushl %[number]; int $0x30; addl $20, %%esp"      \
+               : "=a" (retval)                                  \
+               : [number] "i" (NUMBER),                         \
+                 [arg0] "g" (ARG0),                             \
+                 [arg1] "g" (ARG1),                             \
+                 [arg2] "g" (ARG2),                             \
+                 [arg3] "g" (ARG3)                              \
+               : "memory");                                     \
+          retval;                                               \
+        })
+
+
+int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
+  return syscall1(SYS_PIBONACCI,n);
+}
+int sys_sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
+  return syscall4(SYS_SUM,a,b,c,d);
+}
+//
+
 void
 halt (void) 
 {
