@@ -24,6 +24,7 @@ syscall_handler (struct intr_frame *f UNUSED)
       break;
     case SYS_EXIT://
 
+     // sys_exit();
       break;
     case SYS_EXEC://
       break;
@@ -67,6 +68,9 @@ void sys_halt(void){
 }
 
 void sys_exit(int status){
+  struct thread *current_t = thread_current();
+  current_t -> exit_status = status;//success.  (nonzero == fail to exit)
+  printf("%s: exit(%d)\n", thread_name(), status);
   thread_exit();
 }
 int sys_write(int fd, const void *buffer, unsigned size){
@@ -84,11 +88,20 @@ pid_t sys_exec(const char *cmd_line){
 
 /*20191102 inseok : functions included*/
 int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
-
-
+  int a = 0,b = 1,ans = 0, i;
+  
+  if(n==0)
+    return 0;
+  else if(n==1)
+    return 1;
+  for(i=2;i<n;i++){
+    ans=a+b;
+    a=b;
+    b=ans;
+  }
+  return ans;
 }
 int sys_sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
-
-
+  return a+b+c+d;
 }
 /**/

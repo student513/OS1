@@ -61,8 +61,8 @@
           retval;                                               \
         })
 
-//1102 형준
-#define syscall4(NUMBER, ARG0, ARG1, ARG2, ARG3)                    \
+//1102 형준 sys_sum4전용 arg 4개 받는 syscall
+#define syscall4(NUMBER, ARG0, ARG1, ARG2, ARG3)                \
         ({                                                      \
           int retval;                                           \
           asm volatile                                          \
