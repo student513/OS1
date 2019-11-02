@@ -18,6 +18,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 
+
+
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
@@ -127,17 +129,32 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid ) //wait할 수 있도록 수정 10.29 형준
 {
-  long long i;
-  long long sum =0;
-  
-  for(i=0;i<10000000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
-    sum+=i;
-   
-    if(i%10000==0)printf(" ");
-
+  /*
+  int i=1,j=3,k;
+  int sum =1;
+  while(sum++){
+    i+=j;
+  }*/
+ 
+  /*
+  for(i=0;i<100000000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
+    for(j=0;j<100000000;j++){
+      if(i%2)
+        sum+=j;
+      else if(j%2)
+        sum+=i;
+    }
   }
+  */
 
-  return -1;
+ 
+  int i,j;
+  for (i = 0; i < 100000000; i++){
+    if (i%1000==0)printf(" ");
+  }
+  
+  return j;
+  
 }
 
 /* Free the current process's resources. */
