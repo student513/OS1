@@ -62,7 +62,7 @@
         })
 
 //1102 형준
-#define syscall4(NUMBER, ARG0, ARG1, ARG2, ARG3)                      \
+#define syscall4(NUMBER, ARG0, ARG1, ARG2, ARG3)                    \
         ({                                                      \
           int retval;                                           \
           asm volatile                                          \
@@ -80,10 +80,10 @@
 
 
 int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
-  return syscall1(SYS_PIBONACCI,n);
+  return syscall1(SYS_FIBONACCI,n);
 }
 int sys_sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
-  return syscall4(SYS_SUM,a,b,c,d);
+  return syscall4(SYS_SUM4,a,b,c,d);
 }
 //
 

@@ -67,7 +67,7 @@ void sys_halt(void){
 }
 
 void sys_exit(int status){
-
+  thread_exit();
 }
 int sys_write(int fd, const void *buffer, unsigned size){
 
