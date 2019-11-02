@@ -475,8 +475,19 @@ init_thread (struct thread *t, const char *name, int priority)
   list_push_back (&all_list, &t->allelem);//만들어진 스레드를 all_list에 매달음
 
   /* 10.31 형준 */
-  //list_init(&t->child_list);
-  //t->exit_status=-1;
+  /*
+  t는 부모스레드. 그의 자식은 child_list. 기다릴지 말지에 대한
+  sema value는 t가 갖고 있어야하며, t는 자식의 exit_status를 알고
+  sema를 up할지 down할지 결정한다.
+  부모스레드가 생성되면 자식스레드도 자동으로 생성되어야하며, 그러므로
+  sema_init도 되어야한다. running_thread p는 무엇?
+  */
+  #ifdef USERPROG
+  sema_init(&(t->child_lock), 0);  
+  sema_init(&(t->mem_lock), 0);      
+  list_init(&(t->child));
+  list_push_back(&(running_thread()->child), &(t->child_elem));
+  #endif  
   /* */
 }
 

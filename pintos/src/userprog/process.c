@@ -60,6 +60,7 @@ process_execute (const char *file_name)
   tid = thread_create (temp_file_name, PRI_DEFAULT, start_process, fn_copy);//file_name->temp_ 10.31 형준
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
+
   return tid;
 }
 
@@ -145,16 +146,31 @@ process_wait (tid_t child_tid ) //wait할 수 있도록 수정 10.29 형준
         sum+=i;
     }
   }
-  */
-
- 
   int i,j;
   for (i = 0; i < 100000000; i++){
     if (i%1000==0)printf(" ");
   }
   
   return j;
+  */
   
+  /*1102 수정해야할 곳*/
+  struct list_elem* e;
+  struct thread* t = NULL;
+  int exit_status;
+
+  for (e = list_begin(&(thread_current()->child)); e != list_end(&(thread_current()->child)); e = list_next(e)) {
+    t = list_entry(e, struct thread, child_elem);
+    if (child_tid == t->tid) {
+      sema_down(&(t->child_lock));
+      exit_status = t->exit_status;
+      list_remove(&(t->child_elem));
+      sema_up(&(t->mem_lock)); /* new */
+      return exit_status;
+    }
+  }
+  return -1;
+  /* */
 }
 
 /* Free the current process's resources. */
@@ -180,6 +196,11 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+
+    /*1102 수정해야할 곳*/
+    sema_up(&(cur->child_lock));
+    sema_down(&(cur->mem_lock));
+    /**/
 }
 
 /* Sets up the CPU for running user code in the current

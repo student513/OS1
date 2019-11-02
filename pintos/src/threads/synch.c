@@ -58,7 +58,7 @@ sema_init (struct semaphore *sema, unsigned value)
    interrupts disabled, but if it sleeps then the next scheduled
    thread will probably turn interrupts back on. */
 void
-sema_down (struct semaphore *sema) 
+sema_down (struct semaphore *sema) //자식스레드 생성돼있으므로 부모는 wait해야하는 상태
 {
   enum intr_level old_level;
 
@@ -66,7 +66,7 @@ sema_down (struct semaphore *sema)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  while (sema->value == 0) 
+  while (sema->value == 0) //sema가 down인동안 wait리스트에 작업할 스레드를 추가한다
     {
       list_push_back (&sema->waiters, &thread_current ()->elem);
       thread_block ();

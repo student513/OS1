@@ -5,7 +5,6 @@
 #include <list.h>
 #include <stdint.h>
 #include "synch.h"
-
 /* States in a thread's life cycle. */
 enum thread_status
   {
@@ -99,13 +98,14 @@ struct thread
     uint32_t *pagedir;                  /* Page directory. */
     /*20191102 inseok*/
     int exit_status;
-    //1102 형준
+  
+    /**/
+    /*1102 수정해야할 곳*/
     struct semaphore child_lock;
     struct list child;
     struct list_elem child_elem;
     struct semaphore mem_lock;
     //
-    /**/
 #endif
     
     /* Owned by thread.c. */
