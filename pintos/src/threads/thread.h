@@ -98,6 +98,7 @@ struct thread
     uint32_t *pagedir;                  /* Page directory. */
     /*20191102 inseok*/
     int exit_status;
+  
     /**/
     /*1102 수정해야할 곳*/
     struct semaphore child_lock;

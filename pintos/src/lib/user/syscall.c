@@ -79,10 +79,10 @@
         })
 
 
-int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
+int fibonacci(int n){//Return N th value of Fibonacci sequence
   return syscall1(SYS_FIBONACCI,n);
 }
-int sys_sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
+int sum(int a, int b, int c, int d){//Return the sum of a, b, c and d
   return syscall4(SYS_SUM4,a,b,c,d);
 }
 //

@@ -22,7 +22,7 @@ void close (int fd);
 
 /*191102 inseok : functions included*/
 int fibonacci(int n);//Return N th value of Fibonacci sequence
-int sum4(int a, int b, int c, int d);//Return the sum of a, b, c and d
+int sum(int a, int b, int c, int d);//Return the sum of a, b, c and d
 /**/
 
 #endif /* userprog/syscall.h */
