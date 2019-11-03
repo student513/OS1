@@ -101,10 +101,10 @@ struct thread
   
     /**/
     /*1102 수정해야할 곳*/
-    struct semaphore child_lock;
+    struct semaphore current_lock;
     struct list child;
     struct list_elem child_elem;
-    struct semaphore mem_lock;
+    struct semaphore temp_lock;
     //
 #endif
     
