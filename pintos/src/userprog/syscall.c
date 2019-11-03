@@ -5,6 +5,7 @@
 #include "threads/thread.h"
 #include "devices/shutdown.h"
 #include "lib/user/syscall.h"
+#include "threads/vaddr.h"
 static void syscall_handler (struct intr_frame *);
 
 void
@@ -24,18 +25,19 @@ syscall_handler (struct intr_frame *f)
 
   switch(*(uint32_t *)(temp_esp)){
     case SYS_HALT://
-      sys_halt();
+      halt();
       break;
     case SYS_EXIT://
-      //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1); 
-      sys_exit((int)*(uint32_t *)(f->esp + 4));
+      (is_user_vaddr(f->esp + 4)) ? NULL:exit(-1); 
+      exit((int)*(uint32_t *)(f->esp + 4));
+
       break;
     case SYS_EXEC://
-      //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
-      f->eax = sys_exec((const char)*(uint32_t *)(f->esp + 4));
+      (is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
+      f->eax = exec((const char)*(uint32_t *)(f->esp + 4));
       break;
     case SYS_WAIT://
-      f->eax = sys_wait((pid_t)*(uint32_t *)(f->esp + 4));
+      f->eax = wait((pid_t)*(uint32_t *)(f->esp + 4));
       break;
     case SYS_CREATE://prj2
       break;
@@ -46,15 +48,15 @@ syscall_handler (struct intr_frame *f)
     case SYS_FILESIZE://prj2
       break;
     case SYS_READ://
-      //(is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
-      //(is_user_vaddr(f->esp + 8)) ? NULL:exit(-1);
-      //(is_user_vaddr(f->esp + 12)) ? NULL:exit(-1);
-      f->eax = sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
+      (is_user_vaddr(f->esp + 4)) ? NULL:exit(-1);
+      (is_user_vaddr(f->esp + 8)) ? NULL:exit(-1);
+      (is_user_vaddr(f->esp + 12)) ? NULL:exit(-1);
+      f->eax = write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
       
       break;
     case SYS_WRITE://
       
-      f->eax = sys_write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
+      f->eax = write((int)*(uint32_t *)(temp_esp+4),(void*)*(uint32_t *)(temp_esp+8),(unsigned)*(uint32_t *)(temp_esp+12));
       break;
     case SYS_SEEK://prj2
       break;
@@ -77,23 +79,23 @@ syscall_handler (struct intr_frame *f)
   //thread_exit ();
 }
 
-void sys_halt(void){
+void halt(void){
   shutdown_power_off();
 }
 
-void sys_exit(int status){
+void exit(int status){
   struct thread *current_t = thread_current();
   current_t -> exit_status = status;//success.  (nonzero == fail to exit)
   printf("%s: exit(%d)\n", thread_name(), status);
   thread_exit();
 }
-int sys_write(int fd, const void *buffer, unsigned size){
+int write(int fd, const void *buffer, unsigned size){
   if(fd == 1){
     putbuf(buffer,size);
   }
   return (int)size;
 }
-int sys_read(int fd, void* buffer, unsigned size){
+int read(int fd, void* buffer, unsigned size){
   int i=0;
   uint8_t check;
   if(fd ==0){
@@ -103,15 +105,15 @@ int sys_read(int fd, void* buffer, unsigned size){
     }
   }
 }
-int sys_wait(pid_t pid){
+int wait(pid_t pid){
   return process_wait(pid);
 }
-pid_t sys_exec(const char *cmd_line){
+pid_t exec(const char *cmd_line){
   return process_execute(cmd_line); 
 }
 
 /*20191102 inseok : functions included*/
-int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
+int fibonacci(int n){//Return N th value of Fibonacci sequence
   int a = 0,b = 1,ans = 0, i;
   
   if(n==0)
@@ -125,7 +127,7 @@ int sys_fibonacci(int n){//Return N th value of Fibonacci sequence
   }
   return ans;
 }
-int sys_sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
+int sum4(int a, int b, int c, int d){//Return the sum of a, b, c and d
   return a+b+c+d;
 }
 /**/

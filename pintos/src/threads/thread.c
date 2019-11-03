@@ -482,6 +482,7 @@ init_thread (struct thread *t, const char *name, int priority)
   부모스레드가 생성되면 자식스레드도 자동으로 생성되어야하며, 그러므로
   sema_init도 되어야한다. running_thread p는 무엇?
   */
+  /*1102 수정해야할 곳*/
   #ifdef USERPROG
   sema_init(&(t->child_lock), 0);  
   sema_init(&(t->mem_lock), 0);      
