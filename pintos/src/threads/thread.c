@@ -484,8 +484,8 @@ init_thread (struct thread *t, const char *name, int priority)
   */
   /*1102 수정해야할 곳*/
   #ifdef USERPROG
-  sema_init(&(t->child_lock), 0);  
-  sema_init(&(t->mem_lock), 0);      
+  sema_init(&(t->current_lock), 0);  
+  sema_init(&(t->temp_lock), 0);      
   list_init(&(t->child));
   list_push_back(&(running_thread()->child), &(t->child_elem));
   #endif  

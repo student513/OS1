@@ -131,40 +131,31 @@ start_process (void *file_name_)
 
 int
 process_wait (tid_t child_tid ) //wait할 수 있도록 수정 10.29 형준
-{
-  /*
-  for(i=0;i<100000000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
-    for(j=0;j<100000000;j++){
-      if(i%2)
-        sum+=j;
-      else if(j%2)
-        sum+=i;
-    }
-  }
-  int i,j;
-  for (i = 0; i < 100000000; i++){
-    if (i%1000==0)printf(" ");
-  }
-  
-  return j;
-  */
-  
+{ 
   /*1102 수정해야할 곳*/
   struct list_elem* e;
   struct thread* t = NULL;
   int exit_status;
-
-  for (e = list_begin(&(thread_current()->child)); e != list_end(&(thread_current()->child)); e = list_next(e)) {
-    t = list_entry(e, struct thread, child_elem);
-    if (child_tid == t->tid) {
-      sema_down(&(t->child_lock));
-      exit_status = t->exit_status;
-      list_remove(&(t->child_elem));
-      sema_up(&(t->mem_lock)); /* new */
-      return exit_status;
+  e = list_begin(&(thread_current()->child));
+  while(e != list_end(&(thread_current()->child))){
+    t = list_entry(e, struct thread, child_elem); //return thread by e. 
+    if(t->tid ==child_tid)
+      break;
+    e= list_next(e);
+  }
+  
+  if(t !=NULL){
+    if (t->tid == child_tid) {
+        sema_down(&(t->current_lock));//현재 쓰레드 멈춤
+        exit_status = t->exit_status;//exit status 반환
+        list_remove(&(t->child_elem));//자식 없애기
+        sema_up(&(t->temp_lock)); // new 
+        return exit_status;
     }
   }
-  return -1;
+  else{
+    return -1;//abnormal (the thread donot have child_tid)
+  }
   /* */
 }
 
@@ -193,8 +184,11 @@ process_exit (void)
     }
 
     /*1102 수정해야할 곳*/
-    sema_up(&(cur->child_lock));
-    sema_down(&(cur->mem_lock));
+    
+    
+    sema_up(&(cur->current_lock));
+   
+    sema_down(&(cur->temp_lock));
     /**/
 }
 
