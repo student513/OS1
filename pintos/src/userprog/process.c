@@ -133,13 +133,6 @@ int
 process_wait (tid_t child_tid ) //wait할 수 있도록 수정 10.29 형준
 {
   /*
-  int i=1,j=3,k;
-  int sum =1;
-  while(sum++){
-    i+=j;
-  }*/
- 
-  /*
   for(i=0;i<100000000;i++){ //inseok :  이게 웃긴게 기다리는 시간이 길어지니깐 page fault 가 항상 뜬다.
     for(j=0;j<100000000;j++){
       if(i%2)
